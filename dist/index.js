@@ -8,38 +8,35 @@ const express_1 = __importDefault(require("express"));
 const config_1 = require("./config");
 const index_1 = require("./middlewares/index");
 const routes_1 = require("./routes");
-class Server {
-    app;
-    constructor() {
-        this.app = (0, express_1.default)();
-        this.configuration();
+// 
+// Initialize Express app
+const app = (0, express_1.default)();
+// Middleware configuration
+app.use(express_1.default.urlencoded({ extended: true }));
+app.use(express_1.default.json());
+app.use((0, cors_1.default)({ origin: config_1.baseUrl.Url }));
+// Routes
+app.get("/", (req, res) => {
+    res.send(`Server running at port ${process.env.PORT || 5000}`);
+});
+app.use("/api", routes_1.ProxyRouter.map());
+// Fallback route
+app.get("*", (req, res) => {
+    res.send("Welcome to the API");
+});
+// Error handlers
+app.use(index_1.methodNotAllowed);
+app.use(index_1.notFound);
+app.use(index_1.genericErrorHandler);
+// Export the serverless function
+exports.default = async (req, res) => {
+    try {
+        await config_1.Database.connection(); // Ensure DB connection
+        app(req, res); // Delegate request handling to Express app
     }
-    configuration() {
-        this.app.set("port", config_1.port);
-        this.app.use(express_1.default.urlencoded({ extended: true }));
-        this.app.use(express_1.default.json());
-        this.app.use((0, cors_1.default)({ origin: config_1.baseUrl.Url }));
-        this.app.get("/", (req, res) => res.send(`Server running at port ${this.app.get("port")}`));
-        //API Routes
-        this.app.get("*", (req, res) => {
-            res.send("Welcome to the API");
-        });
-        this.app.use("/api", routes_1.ProxyRouter.map());
-        //Error Handler
-        this.app.use(index_1.methodNotAllowed);
-        this.app.use(index_1.notFound);
-        this.app.use(index_1.genericErrorHandler);
+    catch (error) {
+        console.error('Error during request handling:', error);
+        res.status(500).send("Internal Server Error");
     }
-    async connectDB() {
-        await config_1.Database.connection();
-    }
-    start() {
-        this.connectDB();
-        this.app.listen(this.app.get("port"), () => {
-            console.log(`Server running on PORT ${this.app.get("port")}`);
-        });
-    }
-}
-const server = new Server();
-server.start();
+};
 //# sourceMappingURL=index.js.map

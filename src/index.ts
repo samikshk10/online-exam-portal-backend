@@ -1,52 +1,44 @@
 import Cors from "cors";
-import express from "express";
-import { Database, baseUrl, port } from "./config";
+import express, { Request, Response } from "express";
+import { Database, baseUrl } from "./config";
 import { genericErrorHandler, methodNotAllowed, notFound } from "./middlewares/index";
 import { ProxyRouter } from "./routes";
 
-class Server {
-  app: express.Application;
+// 
 
-  constructor() {
-    this.app = express();
-    this.configuration();
+
+// Initialize Express app
+const app = express();
+
+// Middleware configuration
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(Cors({ origin: baseUrl.Url }));
+
+// Routes
+app.get("/", (req: Request, res: Response) => {
+  res.send(`Server running at port ${process.env.PORT || 5000}`);
+});
+
+app.use("/api", ProxyRouter.map());
+
+// Fallback route
+app.get("*", (req: Request, res: Response) => {
+  res.send("Welcome to the API");
+});
+
+// Error handlers
+app.use(methodNotAllowed);
+app.use(notFound);
+app.use(genericErrorHandler);
+
+// Export the serverless function
+export default async (req: Request, res: Response) => {
+  try {
+    await Database.connection(); // Ensure DB connection
+    app(req, res); // Delegate request handling to Express app
+  } catch (error) {
+    console.error('Error during request handling:', error);
+    res.status(500).send("Internal Server Error");
   }
-
-  private configuration() {
-    this.app.set("port", port);
-
-    this.app.use(express.urlencoded({ extended: true }));
-
-    this.app.use(express.json());
-
-    this.app.use(Cors({ origin: baseUrl.Url }));
-
-    this.app.get("/", (req, res) => res.send(`Server running at port ${this.app.get("port")}`));
-
-    //API Routes
-
-    this.app.get("*", (req, res) => {
-      res.send("Welcome to the API")
-    });
-    this.app.use("/api", ProxyRouter.map());
-
-    //Error Handler
-    this.app.use(methodNotAllowed);
-    this.app.use(notFound);
-    this.app.use(genericErrorHandler);
-  }
-
-  private async connectDB() {
-    await Database.connection();
-  }
-
-  public start() {
-    this.connectDB();
-    this.app.listen(this.app.get("port"), () => {
-      console.log(`Server running on PORT ${this.app.get("port")}`);
-    });
-  }
-}
-
-const server = new Server();
-server.start();
+};
