@@ -3,11 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
 const config_1 = require("./config");
 const index_1 = require("./middlewares/index");
 const routes_1 = require("./routes");
-const cors_1 = __importDefault(require("cors"));
 class Server {
     app;
     constructor() {
@@ -21,6 +21,9 @@ class Server {
         this.app.use((0, cors_1.default)({ origin: config_1.baseUrl.Url }));
         this.app.get("/", (req, res) => res.send(`Server running at port ${this.app.get("port")}`));
         //API Routes
+        this.app.get("*", (req, res) => {
+            res.send("Welcome to the API");
+        });
         this.app.use("/api", routes_1.ProxyRouter.map());
         //Error Handler
         this.app.use(index_1.methodNotAllowed);
