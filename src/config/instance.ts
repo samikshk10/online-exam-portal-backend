@@ -37,7 +37,7 @@ class Database {
         },
       },
       port: this.port,
-      logging: true,
+      logging: false,
       timezone: "utc",
       pool: {
         max: this.maxPool,
