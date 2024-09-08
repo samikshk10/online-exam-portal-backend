@@ -42,4 +42,4 @@ class Server {
 }
 const server = new Server();
 server.start();
-//# sourceMappingURL=server.js.map
+//# sourceMappingURL=index.js.map
