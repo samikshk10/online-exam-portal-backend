@@ -8,6 +8,7 @@
     "build": "tsc --noEmitOnError false",
     "build:watch": "tsc --watch",
     "start": "nodemon dist/index.js",
+    "postinstall": "npm install pg",
     "prepare": "husky",
     "lint": "eslint . --ext .js,.ts",
     "format": "prettier --write .",
