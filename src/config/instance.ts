@@ -1,3 +1,4 @@
+import * as pg from "pg";
 import sequelize from "sequelize";
 import { db } from ".";
 
@@ -29,6 +30,7 @@ class Database {
     this.sequelize = new sequelize.Sequelize(this.dbname, this.username, this.password, {
       host: this.host,
       dialect: this.dialect,
+      dialectModule: pg,
       dialectOptions: {
         encrypt: true,
         ssl: {
