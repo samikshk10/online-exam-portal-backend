@@ -18,5 +18,7 @@ export class UserRouter extends RouterClass {
     this.router.route("/admin/login").post(exceptionHandler(UserController.LoginAdmin));
     this.router.route("/verify").get(verifyToken, exceptionHandler(UserController.verifyUser));
     this.router.route("/create/admin").post(verifyToken, exceptionHandler(UserController.createAdmin));
+
+
   }
 }
