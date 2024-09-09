@@ -13,6 +13,7 @@ export class UserRouter extends RouterClass {
 
     this.router.route("/get").get(verifyToken, exceptionHandler(UserController.getUsers));
 
+
     this.router.route("/search").post(exceptionHandler(UserController.searchUsers));
     this.router.route("/admin/login").post(exceptionHandler(UserController.LoginAdmin));
     this.router.route("/verify").get(verifyToken, exceptionHandler(UserController.verifyUser));
