@@ -11,7 +11,7 @@ export class UserRouter extends RouterClass {
   public define(): void {
     this.router.route("/add").post(exceptionHandler(UserController.addUsers));
 
-    this.router.route("/get").get(verifyToken, exceptionHandler(UserController.getUsers));
+    this.router.route("/get").get(exceptionHandler(UserController.getUsers));
 
 
     this.router.route("/search").post(exceptionHandler(UserController.searchUsers));
